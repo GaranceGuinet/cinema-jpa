@@ -69,7 +69,7 @@ Les entités **Genre**, **Langue**, **LieuNaissance** et **LieuTournage** sont c
 - ✅ Analyse des données
 - ✅ Diagramme de classes
 - ✅ Modèle physique de données
-- ⏳ Entités JPA
+- ✅ Entités JPA
 - ⏳ DAO
 - ⏳ Services
 - ⏳ Applications
