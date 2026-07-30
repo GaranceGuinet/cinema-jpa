@@ -6,7 +6,7 @@ import org.hibernate.Hibernate;
 /**
  * Représente un lieu de tournage.
  * <p>
- * Un lieu de tournage peut être associé à un seul film.
+ * Un lieu de tournage peut être associé à zéro ou un film.
  */
 @Entity
 @Table(name = "lieu_tournage")
@@ -37,6 +37,17 @@ public class LieuTournage {
     this.ville = ville;
     this.etatDepartement = etatDepartement;
     this.pays = pays;
+  }
+
+  /**
+   * Met à jour le côté inverse de la relation avec le film.
+   * Cette méthode est réservée à la synchronisation interne
+   * de l'association.
+   *
+   * @param film film associé
+   */
+  void setFilmInterne(Film film) {
+    this.film = film;
   }
 
   /**
@@ -110,7 +121,4 @@ public class LieuTournage {
     this.ville = ville;
   }
 
-  public void setFilm(Film film) {
-    this.film = film;
-  }
 }

@@ -49,7 +49,6 @@ public class Film {
   /**
    * Note moyenne du film.
    */
-  @Column(precision = 3, scale = 1)
   private Double rating;
 
   /**
@@ -122,7 +121,7 @@ public class Film {
     this.url = url;
     this.langue = langue;
     this.pays = pays;
-    this.lieuTournage = lieuTournage;
+    associerLieuTournage(lieuTournage);
   }
 
   /**
@@ -271,6 +270,29 @@ public class Film {
     role.setFilm(this);
   }
 
+  /**
+   * Associe un lieu de tournage à ce film et maintient
+   * la cohérence des deux côtés de la relation.
+   *
+   * @param nouveauLieu lieu de tournage à associer,
+   *                    ou {@code null} pour supprimer l'association
+   */
+  public void associerLieuTournage(LieuTournage nouveauLieu) {
+
+    if (this.lieuTournage == nouveauLieu) {
+      return;
+    }
+
+    if (this.lieuTournage != null) {
+      this.lieuTournage.setFilmInterne(null);
+    }
+
+    this.lieuTournage = nouveauLieu;
+
+    if (nouveauLieu != null) {
+      nouveauLieu.setFilmInterne(this);
+    }
+  }
 
   public Long getId() {
     return id;
@@ -332,6 +354,7 @@ public class Film {
     return castingPrincipal;
   }
 
+
   public void setPays(Pays pays) {
     this.pays = pays;
   }
@@ -368,8 +391,5 @@ public class Film {
     this.langue = langue;
   }
 
-  public void setLieuTournage(LieuTournage lieuTournage) {
-    this.lieuTournage = lieuTournage;
-  }
 
 }

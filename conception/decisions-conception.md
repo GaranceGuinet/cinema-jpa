@@ -23,7 +23,9 @@ Dans le modèle physique de données, cette conception est représentée par :
 - une table ACTEUR dont la clé primaire est également une clé étrangère vers PERSONNE ;
 - une table REALISATEUR construite selon le même principe.
 
-Les fichiers fournis peuvent référencer une même personne à la fois comme acteur et comme réalisateur. Afin de conserver cette stratégie d'héritage, l'identifiant IMDb n'est pas déclaré unique dans la table PERSONNE. Deux occurrences distinctes peuvent ainsi être créées tout en partageant le même identifiant IMDb.
+Les fichiers fournis peuvent référencer une même personne à la fois comme acteur et comme réalisateur. Afin de conserver
+cette stratégie d'héritage, l'identifiant IMDB n'est pas déclaré unique dans la table PERSONNE. Deux occurrences
+distinctes peuvent ainsi être créées tout en partageant le même identifiant IMDB.
 
 ---
 
@@ -39,7 +41,8 @@ Un rôle :
 - est associé à un seul acteur ;
 - possède le nom du personnage interprété.
 
-Cette modélisation permet à un même acteur d'interpréter plusieurs personnages dans un même film ou dans plusieurs films.
+Cette modélisation permet à un même acteur d'interpréter plusieurs personnages dans un même film ou dans plusieurs
+films.
 
 ---
 
@@ -74,7 +77,7 @@ Le lieu de tournage est représenté par une entité dédiée.
 Dans le modèle retenu :
 
 - un film possède au maximum un lieu de tournage ;
-- un lieu de tournage enregistré est associé à un seul film.
+- un lieu de tournage peut être associé à zéro ou un film.
 
 ---
 
@@ -112,11 +115,12 @@ Cette conception évite la duplication des genres et facilite leur réutilisatio
 
 # Identifiants
 
-Toutes les entités persistées possèdent un identifiant technique de type **Long** généré automatiquement.
+Les entités principales possèdent un identifiant technique de type Long.
+Pour les entités racines, cet identifiant est généré automatiquement.
 
-Les tables de jointure utilisent une clé primaire composite.
-
-Les tables ACTEUR et REALISATEUR réutilisent la clé primaire de PERSONNE dans le cadre de la stratégie d'héritage **JOINED**.
+Dans le cadre de la stratégie d’héritage JOINED, les tables ACTEUR et
+REALISATEUR réutilisent la clé primaire de PERSONNE.
+Les tables de jointure utilisent quant à elles une clé primaire composite.
 
 ---
 
@@ -140,13 +144,25 @@ Les clés étrangères assurent la cohérence des relations entre les différent
 
 # Hypothèses de conception
 
-Certaines contraintes n'étant pas entièrement précisées dans les données fournies, les choix suivants ont été retenus lors de la conception :
+Certaines contraintes n'étant pas entièrement précisées dans les données fournies, les choix suivants ont été retenus
+lors de la conception :
 
 - un film possède au maximum une langue ;
 - un film possède au maximum un pays d'origine ;
 - un film possède au maximum un lieu de tournage.
 
-Ces choix sont appliqués de manière cohérente dans le diagramme de classes, le modèle physique de données et l'implémentation JPA.
+Ces choix sont appliqués de manière cohérente dans le diagramme de classes, le modèle physique de données et
+l'implémentation JPA.
+
+---
+
+# Gestion des relations bidirectionnelles
+
+Les relations bidirectionnelles sont maintenues de manière cohérente dans l'implémentation JPA.
+
+Lorsque cela est nécessaire, des méthodes d'association dédiées sont utilisées afin de garantir la synchronisation des
+deux côtés de la relation. C'est notamment le cas de la relation un-à-un entre **Film** et **LieuTournage**, dont
+l'association est gérée par une méthode dédiée.
 
 ---
 

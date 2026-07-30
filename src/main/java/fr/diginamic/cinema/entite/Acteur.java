@@ -17,7 +17,6 @@ public class Acteur extends Personne {
   /**
    * Taille de l'acteur en mètres.
    */
-  @Column(precision = 3, scale = 2)
   private Double taille;
 
   /**

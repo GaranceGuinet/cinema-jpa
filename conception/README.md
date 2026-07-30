@@ -4,7 +4,8 @@
 
 Ce projet est réalisé dans le cadre de la formation **Concepteur Développeur d'Applications (CDA)**.
 
-L'objectif est de concevoir puis développer une application Java permettant de construire puis d'exploiter une base de données de films à partir de plusieurs fichiers CSV et JSON.
+L'objectif est de concevoir puis développer une application Java permettant de construire puis d'exploiter une base de
+données de films à partir de plusieurs fichiers CSV.
 
 Le projet est développé avec :
 
@@ -49,7 +50,11 @@ Le projet a été conçu en suivant une démarche de modélisation UML avant tou
 
 ## Données
 
-Les données sont fournies sous la forme de fichiers CSV et JSON représentant notamment :
+Les données sources sont fournies sous deux formats (CSV et JSON).
+
+L'implémentation retenue dans ce projet repose sur l'import des fichiers CSV.
+
+Les fichiers utilisés représentent notamment :
 
 - les films ;
 - les acteurs ;
@@ -60,7 +65,8 @@ Les données sont fournies sous la forme de fichiers CSV et JSON représentant n
 
 Ces données sont importées afin d'alimenter la base de données relationnelle.
 
-Les entités **Genre**, **Langue**, **LieuNaissance** et **LieuTournage** sont construites à partir des informations présentes dans les données importées.
+Les entités **Genre**, **Langue**, **LieuNaissance** et **LieuTournage** sont construites à partir des informations
+présentes dans les données importées.
 
 ---
 
@@ -70,6 +76,6 @@ Les entités **Genre**, **Langue**, **LieuNaissance** et **LieuTournage** sont c
 - ✅ Diagramme de classes
 - ✅ Modèle physique de données
 - ✅ Entités JPA
-- ⏳ DAO
+- ✅ DAO
 - ⏳ Services
 - ⏳ Applications
