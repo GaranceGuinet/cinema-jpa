@@ -72,10 +72,11 @@ présentes dans les données importées.
 
 ## État d'avancement
 
-- ✅ Analyse des données
-- ✅ Diagramme de classes
-- ✅ Modèle physique de données
-- ✅ Entités JPA
-- ✅ DAO
-- ⏳ Services
-- ⏳ Applications
+- ✅ Analyse
+  ✅ Conception
+  ✅ MPD
+  ✅ Entités JPA
+  ✅ DAO
+  ✅ Import CSV
+  ⏳ Requêtes de recherche
+  ⏳ Menu utilisateur
