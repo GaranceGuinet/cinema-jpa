@@ -1,82 +1,59 @@
-# Projet Cinéma – CDA
+Dossier de conception
 
-## Présentation
+Ce dossier regroupe les documents de conception du projet Cinéma JPA, réalisé dans le cadre de la formation Concepteur Développeur d'Applications (CDA).
 
-Ce projet est réalisé dans le cadre de la formation **Concepteur Développeur d'Applications (CDA)**.
+Contenu
 
-L'objectif est de concevoir puis développer une application Java permettant de construire puis d'exploiter une base de
-données de films à partir de plusieurs fichiers CSV.
+01-diagramme-de-classes.png : diagramme de classes UML ;
 
-Le projet est développé avec :
+02-modele-physique-donnees.png : modèle physique de données ;
 
-- Java
-- Maven
-- Jakarta Persistence (JPA)
-- Hibernate
-- MariaDB
+decisions-conception.md : justification des principaux choix de modélisation ;
 
----
+le fichier Visual Paradigm utilisé pour construire les diagrammes.
 
-## Objectifs
+Modèle retenu
 
-Le projet est construit en plusieurs étapes :
+Le projet repose notamment sur :
 
-1. analyse des données fournies ;
-2. conception UML ;
-3. réalisation du modèle physique de données ;
-4. implémentation des entités JPA ;
-5. développement de la couche DAO ;
-6. développement de la couche Service ;
-7. réalisation des applications demandées.
+une classe abstraite Personne ;
 
----
+les spécialisations Acteur et Realisateur ;
 
-## Dossier conception
+une entité Role reliant un acteur, un film et un personnage ;
 
-Le dossier **conception** regroupe l'ensemble des documents ayant servi à la modélisation du projet.
+une relation plusieurs-à-plusieurs entre Film et Genre ;
 
-Il contient :
+une relation plusieurs-à-plusieurs entre Film et Realisateur ;
 
-- le diagramme de classes UML ;
-- le modèle physique de données (MPD) ;
-- le projet Visual Paradigm (.vpp) ;
-- un document présentant les principaux choix de conception.
+une relation plusieurs-à-plusieurs entre Film et Acteur pour le casting principal ;
 
-Ces documents servent de référence afin de garantir la cohérence entre la conception et l'implémentation.
+une relation plusieurs-à-un entre Film et Langue ;
 
-Le projet a été conçu en suivant une démarche de modélisation UML avant toute implémentation.
+une relation plusieurs-à-un entre Film et Pays ;
 
----
+une relation un-à-un entre Film et LieuTournage ;
 
-## Données
+une relation plusieurs-à-un entre Personne et LieuNaissance.
 
-Les données sources sont fournies sous deux formats (CSV et JSON).
+Cohérence avec l'implémentation
 
-L'implémentation retenue dans ce projet repose sur l'import des fichiers CSV.
+La conception est implémentée avec Jakarta Persistence et Hibernate. Les entités JPA correspondent au modèle présenté dans les diagrammes, notamment pour la stratégie d'héritage JOINED, les tables de jointure, les clés étrangères, les contraintes d'unicité et les cardinalités retenues.
 
-Les fichiers utilisés représentent notamment :
+État de la version 1
 
-- les films ;
-- les acteurs ;
-- les réalisateurs ;
-- les rôles ;
-- les associations entre films et réalisateurs ;
-- les pays.
+La version 1 comprend :
 
-Ces données sont importées afin d'alimenter la base de données relationnelle.
+l'import des données CSV vers MariaDB ;
 
-Les entités **Genre**, **Langue**, **LieuNaissance** et **LieuTournage** sont construites à partir des informations
-présentes dans les données importées.
+la couche DAO ;
 
----
+la couche Service ;
 
-## État d'avancement
+l'application d'initialisation ;
 
-- ✅ Analyse
-  ✅ Conception
-  ✅ MPD
-  ✅ Entités JPA
-  ✅ DAO
-  ✅ Import CSV
-  ⏳ Requêtes de recherche
-  ⏳ Menu utilisateur
+l'application de recherche avec les six recherches demandées ;
+
+une application CRUD sur l'entité Genre.
+
+Les améliorations de robustesse et de finition seront traitées dans une version ultérieure.

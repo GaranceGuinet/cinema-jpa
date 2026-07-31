@@ -49,6 +49,27 @@ public class FilmDao extends GenericDao<Film> {
   }
 
   /**
+   * Recherche les films dont le nom correspond exactement
+   * à la valeur saisie, sans tenir compte de la casse.
+   *
+   * @param nom nom du film recherché
+   * @return la liste des films correspondant au nom recherché
+   */
+  public List<Film> findByNom(String nom) {
+
+    TypedQuery<Film> queryFilms = em.createQuery(
+        "SELECT f " +
+            "FROM Film f " +
+            "WHERE LOWER(f.nom) = LOWER(:nom) " +
+            "ORDER BY f.anneeDebut, f.idImdb",
+        Film.class);
+
+    queryFilms.setParameter("nom", nom.trim());
+
+    return queryFilms.getResultList();
+  }
+
+  /**
    * Recherche la filmographie d'un acteur à partir
    * des rôles qu'il a interprétés.
    *

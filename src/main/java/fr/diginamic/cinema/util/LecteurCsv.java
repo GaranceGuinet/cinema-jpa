@@ -52,7 +52,7 @@ public final class LecteurCsv {
 
   /**
    * Lit toutes les lignes d'un fichier présent dans les ressources.
-   *
+   * <p>
    * Cette méthode est utilisée pour films.csv, car certains résumés
    * contiennent des points-virgules non protégés par des guillemets.
    *

@@ -50,6 +50,27 @@ public class ActeurDao extends GenericDao<Acteur> {
   }
 
   /**
+   * Recherche les acteurs dont l'identité correspond exactement
+   * à la valeur saisie, sans tenir compte de la casse.
+   *
+   * @param identite identité de l'acteur recherché
+   * @return la liste des acteurs correspondant à l'identité recherchée
+   */
+  public List<Acteur> findByIdentite(String identite) {
+
+    TypedQuery<Acteur> queryActeurs = em.createQuery(
+        "SELECT a " +
+            "FROM Acteur a " +
+            "WHERE LOWER(a.identite) = LOWER(:identite) " +
+            "ORDER BY a.idImdb",
+        Acteur.class);
+
+    queryActeurs.setParameter("identite", identite.trim());
+
+    return queryActeurs.getResultList();
+  }
+
+  /**
    * Recherche les acteurs appartenant au casting principal d'un film.
    *
    * @param film film dont le casting principal est recherché

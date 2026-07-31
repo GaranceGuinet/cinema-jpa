@@ -1,176 +1,145 @@
-# Décisions de conception
+Décisions de conception
 
-Ce document présente les principaux choix retenus lors de la conception du projet.
+Ce document présente les principaux choix retenus lors de la conception et de l'implémentation du projet.
 
----
+Héritage Personne
 
-# Héritage Personne
+Les acteurs et les réalisateurs partagent plusieurs informations communes : identifiant IMDb, identité, date de naissance, URL et lieu de naissance. Ces informations sont regroupées dans une classe abstraite Personne.
 
-Les acteurs et les réalisateurs partagent plusieurs informations communes :
+Les classes Acteur et Realisateur héritent de cette classe. L'implémentation JPA utilise la stratégie d'héritage JOINED, avec une table PERSONNE, une table ACTEUR et une table REALISATEUR.
 
-- identifiant IMDb ;
-- identité ;
-- date de naissance ;
-- URL.
+Les fichiers sources pouvant référencer une même personne comme acteur et comme réalisateur, l'identifiant IMDb n'est pas déclaré unique dans PERSONNE.
 
-Afin d'éviter toute duplication de ces informations, elles ont été regroupées dans une classe abstraite **Personne**.
+Entité Role
 
-Les classes **Acteur** et **Realisateur** héritent de cette classe.
-
-Dans le modèle physique de données, cette conception est représentée par :
-
-- une table PERSONNE ;
-- une table ACTEUR dont la clé primaire est également une clé étrangère vers PERSONNE ;
-- une table REALISATEUR construite selon le même principe.
-
-Les fichiers fournis peuvent référencer une même personne à la fois comme acteur et comme réalisateur. Afin de conserver
-cette stratégie d'héritage, l'identifiant IMDB n'est pas déclaré unique dans la table PERSONNE. Deux occurrences
-distinctes peuvent ainsi être créées tout en partageant le même identifiant IMDB.
-
----
-
-# Entité Role
-
-Le personnage joué dans un film possède sa propre identité métier.
-
-Il est donc représenté par une entité **Role** plutôt que par une simple table de jointure.
+Le personnage interprété dans un film possède une identité métier. Il est donc représenté par une entité Role.
 
 Un rôle :
 
-- appartient à un seul film ;
-- est associé à un seul acteur ;
-- possède le nom du personnage interprété.
+appartient à un seul film ;
 
-Cette modélisation permet à un même acteur d'interpréter plusieurs personnages dans un même film ou dans plusieurs
-films.
+est associé à un seul acteur ;
 
----
+possède le nom du personnage interprété.
 
-# Tables de jointure
+Une contrainte d'unicité est appliquée sur (film, acteur, personnage).
 
-Les relations plusieurs-à-plusieurs sont représentées par des tables de jointure :
+Tables de jointure
 
-- FILM_GENRE ;
-- FILM_REALISATEUR ;
-- CASTING_PRINCIPAL.
+Les relations plusieurs-à-plusieurs sont représentées par :
 
-Les tables de jointure utilisent une clé primaire composite constituée des clés étrangères qu'elles relient.
+FILM_GENRE ;
 
----
+FILM_REALISATEUR ;
 
-# Lieu de naissance
+CASTING_PRINCIPAL.
 
-Le lieu de naissance est modélisé comme une entité indépendante.
+Ces tables utilisent une clé primaire composite formée de leurs deux clés étrangères.
 
-Une personne peut posséder au maximum un lieu de naissance.
+Lieu de naissance
+
+Une personne possède au maximum un lieu de naissance.
 
 Un lieu de naissance peut être associé à plusieurs personnes.
 
-Cette modélisation évite de dupliquer les informations géographiques.
+Le nom du lieu de naissance est unique.
 
----
+Lieu de tournage
 
-# Lieu de tournage
+Un film possède au maximum un lieu de tournage.
 
-Le lieu de tournage est représenté par une entité dédiée.
+Un lieu de tournage peut être associé à zéro ou un film.
 
-Dans le modèle retenu :
+La clé étrangère est portée par FILM et est unique.
 
-- un film possède au maximum un lieu de tournage ;
-- un lieu de tournage peut être associé à zéro ou un film.
+Langue
 
----
+Un film possède au maximum une langue.
 
-# Langue
+Une langue peut être associée à plusieurs films.
 
-La langue est modélisée comme une entité indépendante.
+Le nom de la langue est unique.
 
-Dans le modèle retenu :
+Pays
 
-- un film possède au maximum une langue ;
-- une langue peut être associée à plusieurs films.
+Un film possède au maximum un pays d'origine.
 
----
+Un pays peut être associé à plusieurs films.
 
-# Pays
+Le nom du pays est unique.
 
-Le pays est modélisé comme une entité indépendante.
+Genre
 
-Dans le modèle retenu :
+La relation entre Film et Genre est plusieurs-à-plusieurs. Le nom du genre est unique.
 
-- un film possède au maximum un pays d'origine ;
-- un pays peut être associé à plusieurs films.
+Identifiants et intégrité
 
----
+Les entités principales possèdent un identifiant technique de type Long, généré automatiquement.
 
-# Genre
+Le modèle applique notamment :
 
-Le genre est modélisé comme une entité indépendante.
+l'unicité de l'identifiant IMDb des films ;
 
-La relation entre Film et Genre est une relation plusieurs-à-plusieurs.
+l'unicité des noms de genre, langue, pays et lieu de naissance ;
 
-Cette conception évite la duplication des genres et facilite leur réutilisation.
+l'unicité d'un rôle pour (film, acteur, personnage) ;
 
----
+l'unicité de l'association entre un film et son lieu de tournage.
 
-# Identifiants
+Architecture applicative
 
-Les entités principales possèdent un identifiant technique de type Long.
-Pour les entités racines, cet identifiant est généré automatiquement.
+Le projet est structuré en couches :
 
-Dans le cadre de la stratégie d’héritage JOINED, les tables ACTEUR et
-REALISATEUR réutilisent la clé primaire de PERSONNE.
-Les tables de jointure utilisent quant à elles une clé primaire composite.
+entités : domaine et mapping JPA ;
 
----
+DAO : accès aux données ;
 
-# Contraintes d'intégrité
+services : logique métier et transactions ;
 
-Le modèle met notamment en œuvre les contraintes suivantes :
+applications console : interaction avec l'utilisateur.
 
-- unicité de l'identifiant IMDb des films ;
-- unicité du nom des genres ;
-- unicité du nom des langues ;
-- unicité du nom des pays ;
-- unicité du nom des lieux de naissance ;
-- unicité d'un rôle pour une combinaison (film, acteur, personnage) ;
-- unicité de l'association entre un film et son lieu de tournage.
+Applications principales :
 
-Les contraintes d'unicité garantissent l'absence de doublons sur les données de référence.
+InitialisationJpa : import des CSV ;
 
-Les clés étrangères assurent la cohérence des relations entre les différentes entités.
+RechercheJpa : six recherches métier ;
 
----
+CrudJpa : démonstration CRUD sur Genre.
 
-# Hypothèses de conception
+Import des données
 
-Certaines contraintes n'étant pas entièrement précisées dans les données fournies, les choix suivants ont été retenus
-lors de la conception :
+Les données de référence sont normalisées afin d'éviter les doublons liés à la casse, aux accents ou aux espaces superflus.
 
-- un film possède au maximum une langue ;
-- un film possède au maximum un pays d'origine ;
-- un film possède au maximum un lieu de tournage.
+Chaque phase d'import est exécutée dans une transaction avec annulation en cas d'erreur.
 
-Ces choix sont appliqués de manière cohérente dans le diagramme de classes, le modèle physique de données et
-l'implémentation JPA.
+Recherches métier
 
----
+L'application permet :
 
-# Gestion des relations bidirectionnelles
+la filmographie d'un acteur ;
 
-Les relations bidirectionnelles sont maintenues de manière cohérente dans l'implémentation JPA.
+le casting principal d'un film ;
 
-Lorsque cela est nécessaire, des méthodes d'association dédiées sont utilisées afin de garantir la synchronisation des
-deux côtés de la relation. C'est notamment le cas de la relation un-à-un entre **Film** et **LieuTournage**, dont
-l'association est gérée par une méthode dédiée.
+les films sortis entre deux années ;
 
----
+les films communs à deux acteurs ;
 
-# Objectif
+les acteurs communs à deux films ;
 
-L'objectif de cette conception est de produire un modèle :
+les films d'un acteur sortis entre deux années.
 
-- cohérent avec les données fournies ;
-- conforme aux règles métier retenues ;
-- facilement implémentable avec JPA ;
-- évolutif pour les étapes suivantes du projet.
+Les requêtes sont centralisées dans les DAO spécialisés et exposées par RechercheService.
+
+CRUD
+
+Une application dédiée permet de créer, consulter, afficher, modifier et supprimer un genre. Les transactions d'écriture sont gérées dans GenreService.
+
+Hypothèses retenues
+
+un film possède au maximum une langue ;
+
+un film possède au maximum un pays d'origine ;
+
+un film possède au maximum un lieu de tournage.
+
+Ces choix sont appliqués de façon cohérente dans les diagrammes et l'implémentation JPA.
