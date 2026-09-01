@@ -47,9 +47,8 @@ public class RechercheJpa {
         System.out.println("5 - Acteurs communs à deux films");
         System.out.println("6 - Films entre deux années avec un acteur");
         System.out.println("7 - Quitter");
-        System.out.print("Votre choix : ");
 
-        int choix = Integer.parseInt(scanner.nextLine());
+        int choix = lireEntier(scanner, "Votre choix : ");
 
         switch (choix) {
 
@@ -120,13 +119,18 @@ public class RechercheJpa {
           }
           case 3 -> {
 
-            System.out.print("Année de début : ");
             int anneeDebut =
-                Integer.parseInt(scanner.nextLine());
+                lireEntier(scanner, "Année de début : ");
 
-            System.out.print("Année de fin : ");
             int anneeFin =
-                Integer.parseInt(scanner.nextLine());
+                lireEntier(scanner, "Année de fin : ");
+
+            if (anneeDebut > anneeFin) {
+              System.out.println(
+                  "L'année de début doit être inférieure ou égale à l'année de fin."
+              );
+              continue;
+            }
 
             List<Film> films =
                 rechercheService.rechercherFilmsParPeriode(
@@ -314,13 +318,18 @@ public class RechercheJpa {
             System.out.print("Nom de l'acteur : ");
             String nomActeur = scanner.nextLine();
 
-            System.out.print("Année de début : ");
             int anneeDebut =
-                Integer.parseInt(scanner.nextLine());
+                lireEntier(scanner, "Année de début : ");
 
-            System.out.print("Année de fin : ");
             int anneeFin =
-                Integer.parseInt(scanner.nextLine());
+                lireEntier(scanner, "Année de fin : ");
+
+            if (anneeDebut > anneeFin) {
+              System.out.println(
+                  "L'année de début doit être inférieure ou égale à l'année de fin."
+              );
+              continue;
+            }
 
             List<Acteur> acteurs =
                 rechercheService.rechercherActeurs(
@@ -419,4 +428,18 @@ public class RechercheJpa {
       }
     }
   }
+
+  private static int lireEntier(Scanner scanner, String message) {
+    while (true) {
+      System.out.print(message);
+      String saisie = scanner.nextLine().trim();
+
+      try {
+        return Integer.parseInt(saisie);
+      } catch (NumberFormatException e) {
+        System.out.println("Veuillez saisir un nombre entier valide.");
+      }
+    }
+  }
+
 }
