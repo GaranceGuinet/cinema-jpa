@@ -66,7 +66,7 @@ public class RechercheJpa {
 
             } else {
 
-              Acteur acteur = acteurs.get(0);
+              Acteur acteur = choisirActeur(scanner, acteurs);
 
               List<Film> films =
                   rechercheService.rechercherFilmographie(acteur);
@@ -99,19 +99,30 @@ public class RechercheJpa {
 
             } else {
 
-              Film film = films.get(0);
+              Film film = choisirFilm(scanner, films);
 
               List<Acteur> acteurs =
                   rechercheService.rechercherCasting(film);
 
-              System.out.println();
-              System.out.println("Casting de "
-                  + film.getNom());
-
-              for (Acteur acteur : acteurs) {
+              if (acteurs.isEmpty()) {
 
                 System.out.println(
-                    acteur.getIdentite());
+                    "Aucun acteur du casting principal n'est renseigné pour ce film."
+                );
+
+              } else {
+
+                System.out.println();
+                System.out.println(
+                    "Casting de " + film.getNom()
+                );
+
+                for (Acteur acteur : acteurs) {
+
+                  System.out.println(
+                      acteur.getIdentite()
+                  );
+                }
               }
 
             }
@@ -201,10 +212,10 @@ public class RechercheJpa {
             } else {
 
               Acteur premierActeur =
-                  premiersActeurs.get(0);
+                  choisirActeur(scanner, premiersActeurs);
 
               Acteur secondActeur =
-                  secondsActeurs.get(0);
+                  choisirActeur(scanner, secondsActeurs);
 
               List<Film> films =
                   rechercheService.rechercherFilmsCommuns(
@@ -276,10 +287,10 @@ public class RechercheJpa {
             } else {
 
               Film premierFilm =
-                  premiersFilms.get(0);
+                  choisirFilm(scanner, premiersFilms);
 
               Film secondFilm =
-                  secondsFilms.get(0);
+                  choisirFilm(scanner, secondsFilms);
 
               List<Acteur> acteurs =
                   rechercheService.rechercherActeursCommuns(
@@ -344,7 +355,7 @@ public class RechercheJpa {
 
             } else {
 
-              Acteur acteur = acteurs.get(0);
+              Acteur acteur = choisirActeur(scanner, acteurs);
 
               List<Film> films =
                   rechercheService
@@ -429,6 +440,89 @@ public class RechercheJpa {
     }
   }
 
+  private static Film choisirFilm(
+      Scanner scanner,
+      List<Film> films) {
+
+    if (films.size() == 1) {
+      return films.get(0);
+    }
+
+    System.out.println("Plusieurs films correspondent à cette recherche :");
+
+    for (int i = 0; i < films.size(); i++) {
+      Film film = films.get(i);
+
+      System.out.println(
+          (i + 1)
+              + " - "
+              + film.getNom()
+              + " ("
+              + film.getAnneeDebut()
+              + ", IMDb : "
+              + film.getIdImdb()
+              + ")"
+      );
+    }
+
+    int choix;
+
+    do {
+      choix = lireEntier(
+          scanner,
+          "Choisissez un film : "
+      );
+
+      if (choix < 1 || choix > films.size()) {
+        System.out.println("Choix invalide.");
+      }
+
+    } while (choix < 1 || choix > films.size());
+
+    return films.get(choix - 1);
+  }
+
+  private static Acteur choisirActeur(
+      Scanner scanner,
+      List<Acteur> acteurs) {
+
+    if (acteurs.size() == 1) {
+      return acteurs.get(0);
+    }
+
+    System.out.println("Plusieurs acteurs correspondent à cette recherche :");
+
+    for (int i = 0; i < acteurs.size(); i++) {
+      Acteur acteur = acteurs.get(i);
+
+      System.out.println(
+          (i + 1)
+              + " - "
+              + acteur.getIdentite()
+              + " ("
+              + acteur.getDateNaissance()
+              + ", IMDb : "
+              + acteur.getIdImdb()
+              + ")"
+      );
+    }
+    int choix;
+
+    do {
+      choix = lireEntier(
+          scanner,
+          "Choisissez un acteur : "
+      );
+
+      if (choix < 1 || choix > acteurs.size()) {
+        System.out.println("Choix invalide.");
+      }
+
+    } while (choix < 1 || choix > acteurs.size());
+
+    return acteurs.get(choix - 1);
+  }
+
   private static int lireEntier(Scanner scanner, String message) {
     while (true) {
       System.out.print(message);
@@ -441,5 +535,4 @@ public class RechercheJpa {
       }
     }
   }
-
 }
