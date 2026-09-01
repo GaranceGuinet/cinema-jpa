@@ -1,81 +1,63 @@
-Cinéma JPA
+# Cinéma JPA
 
-Projet Java réalisé dans le cadre de la formation Concepteur Développeur d'Applications (CDA).
+Projet Java réalisé dans le cadre de ma formation **Concepteur Développeur d'Applications (CDA)**.
 
-L'application importe des données cinématographiques depuis des fichiers CSV, les enregistre dans MariaDB avec JPA/Hibernate, puis permet de les exploiter à travers des applications console.
+L'application importe des données cinématographiques depuis plusieurs fichiers CSV, les enregistre dans une base MariaDB avec JPA/Hibernate, puis permet de les interroger depuis des applications console.
 
-Fonctionnalités
+## Fonctionnalités
 
-Import
+### Import des données
 
-InitialisationJpa importe :
+`InitialisationJpa` permet d'importer :
 
-les pays ;
+- les pays ;
+- les acteurs ;
+- les réalisateurs ;
+- les films ;
+- les rôles ;
+- le casting principal ;
+- les associations entre films et réalisateurs.
 
-les acteurs ;
+Les genres, langues, lieux de naissance et lieux de tournage sont également créés à partir des données importées.
 
-les réalisateurs ;
+Les données de référence sont normalisées afin de limiter les doublons liés notamment à la casse, aux accents et aux espaces.
 
-les films ;
+Chaque phase d'import est exécutée dans sa propre transaction. En cas d'erreur pendant une phase, la transaction correspondante est annulée.
 
-les rôles ;
+### Recherches
 
-le casting principal ;
+`RechercheJpa` propose six recherches :
 
-les associations entre films et réalisateurs.
+1. afficher la filmographie d'un acteur ;
+2. afficher le casting principal d'un film ;
+3. rechercher les films sortis entre deux années ;
+4. rechercher les films communs à deux acteurs ;
+5. rechercher les acteurs communs à deux films ;
+6. rechercher les films d'un acteur sur une période donnée.
 
-Les genres, langues, lieux de naissance et lieux de tournage sont créés à partir des données importées.
+L'application prend également en compte plusieurs cas particuliers :
 
-Recherches
+- saisie d'une valeur non numérique ;
+- période de recherche incohérente ;
+- plusieurs acteurs portant le même nom ;
+- plusieurs films portant le même titre ;
+- absence de casting principal dans les données.
 
-RechercheJpa propose :
+### CRUD
 
-filmographie d'un acteur ;
+`CrudJpa` permet de gérer les genres depuis une application console :
 
-casting principal d'un film ;
+- création d'un genre ;
+- consultation d'un genre par son identifiant ;
+- affichage de tous les genres ;
+- modification ;
+- suppression.
 
-films sortis entre deux années ;
+## Architecture
 
-films communs à deux acteurs ;
+Le projet est organisé en plusieurs couches :
 
-acteurs communs à deux films ;
-
-films d'un acteur sortis entre deux années ;
-
-fin de l'application.
-
-CRUD
-
-CrudJpa démontre les opérations CRUD sur l'entité Genre :
-
-création ;
-
-consultation ;
-
-modification ;
-
-suppression.
-
-Technologies
-
-Java 21
-
-Maven
-
-Jakarta Persistence 3.1
-
-Hibernate ORM
-
-MariaDB
-
-Apache Commons CSV
-
-Logback
-
-JUnit
-
-Architecture
-
+```text
 src/main/java/fr/diginamic/cinema
 ├── dao
 ├── entite
@@ -84,109 +66,159 @@ src/main/java/fr/diginamic/cinema
 ├── InitialisationJpa.java
 ├── RechercheJpa.java
 └── CrudJpa.java
+```
 
-Prérequis
+- **entite** : modèle métier et mapping JPA ;
+- **dao** : accès aux données et requêtes JPQL ;
+- **service** : logique métier et gestion des transactions ;
+- **util** : méthodes utilitaires ;
+- **applications console** : initialisation, recherches et CRUD.
 
-Java 21
+## Modélisation
 
-Maven
+Le modèle repose notamment sur :
 
-MariaDB
+- une classe abstraite `Personne`, dont héritent `Acteur` et `Realisateur` ;
+- une entité `Role` reliant un acteur à un film et au personnage interprété ;
+- des relations plusieurs-à-plusieurs pour les genres, réalisateurs et acteurs du casting principal ;
+- une relation plusieurs-à-un entre `Film` et `Langue` ;
+- une relation plusieurs-à-un entre `Film` et `Pays` ;
+- une relation plusieurs-à-un entre `Personne` et `LieuNaissance` ;
+- une relation un-à-un entre `Film` et `LieuTournage`.
 
-une base nommée cinema
+L'héritage JPA entre `Personne`, `Acteur` et `Realisateur` utilise la stratégie `JOINED`.
 
-Configuration
+La conception du projet est détaillée dans le
+[README du dossier conception](conception/README.md).
 
-Le fichier JPA se trouve dans :
+## Diagramme de classes
 
+![Diagramme de classes](conception/01-diagramme-de-classes.png)
+
+## Modèle physique de données
+
+![Modèle physique de données](conception/02-modele-physique-donnees.png)
+
+## Technologies
+
+- Java 21
+- Maven
+- Jakarta Persistence
+- Hibernate ORM
+- MariaDB
+- Apache Commons CSV
+- Logback
+- JUnit
+
+## Tests
+
+Le projet contient **11 tests unitaires** portant principalement sur les méthodes qui maintiennent les relations entre les entités.
+
+Ils vérifient notamment :
+
+- l'ajout et la suppression d'un genre ;
+- l'ajout et la suppression d'un réalisateur ;
+- l'ajout et la suppression d'un acteur du casting principal ;
+- l'ajout d'un rôle côté `Film` et côté `Acteur` ;
+- l'association d'un lieu de tournage ;
+- le remplacement d'un lieu de tournage ;
+- la suppression d'un lieu de tournage.
+
+Pour lancer les tests :
+
+```bash
+mvn test
+```
+
+## Prérequis
+
+- Java 21
+- Maven
+- MariaDB
+- une base de données nommée `cinema`
+
+## Configuration
+
+La configuration JPA se trouve dans :
+
+```text
 src/main/resources/META-INF/persistence.xml
+```
 
-Configuration par défaut :
+La configuration utilisée en local est :
 
+```text
 URL : jdbc:mariadb://localhost:3306/cinema
 Utilisateur : root
 Mot de passe : vide
+```
 
-Le schéma doit exister avant le lancement de l'import, car la génération automatique est désactivée.
+Le schéma doit être créé avant de lancer l'import, la génération automatique de la base étant désactivée.
 
-Lancement
+## Lancement
 
-Initialiser la base
+### 1. Importer les données
 
+Lancer :
+
+```text
 fr.diginamic.cinema.InitialisationJpa
+```
 
-Lancer les recherches
+### 2. Effectuer les recherches
 
+Lancer :
+
+```text
 fr.diginamic.cinema.RechercheJpa
+```
 
-Tester le CRUD
+### 3. Tester le CRUD
 
+Lancer :
+
+```text
 fr.diginamic.cinema.CrudJpa
+```
 
-Données sources
+## Données sources
 
-Les CSV sont placés dans :
+Les fichiers CSV utilisés pour l'import se trouvent dans :
 
+```text
 src/main/resources/csv
+```
 
-Fichiers utilisés :
+Fichiers présents :
 
-films.csv
-
+```text
 acteurs.csv
-
-realisateurs.csv
-
-roles.csv
-
-film_realisateurs.csv
-
 castingPrincipal.csv
-
+film_realisateurs.csv
+films.csv
 pays.csv
+realisateurs.csv
+roles.csv
+```
 
-Conception
+## Conception
 
-Le dossier conception contient :
+Le dossier `conception` contient :
 
-le diagramme de classes ;
+```text
+conception
+├── 01-diagramme-de-classes.png
+├── 02-modele-physique-donnees.png
+├── README.md
+├── decisions-conception.md
+└── sources
+    └── cinema-conception.vpp
+```
 
-le modèle physique de données ;
+Il regroupe :
 
-les décisions de conception ;
-
-le projet Visual Paradigm.
-
-État de la version 1
-
-La version 1 comprend :
-
-l'import CSV ;
-
-les entités JPA ;
-
-la couche DAO ;
-
-la couche Service ;
-
-les six recherches demandées ;
-
-le menu console ;
-
-une démonstration CRUD ;
-
-la documentation de conception.
-
-Améliorations prévues
-
-meilleure gestion des erreurs de saisie ;
-
-gestion des homonymes ;
-
-validation stricte des périodes ;
-
-réduction des logs Hibernate ;
-
-ajout de tests automatisés ;
-
-finalisation de certaines DAO complémentaires.
+- le README consacré à la conception ;
+- le diagramme de classes UML ;
+- le modèle physique de données ;
+- le détail des décisions de conception ;
+- le fichier source Visual Paradigm.
